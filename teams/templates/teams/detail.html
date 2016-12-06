@@ -1,0 +1,33 @@
+{% extends 'teams/base.html' %}
+
+{% block title %}{{ instance.name }} | {{ block.super }}{% endblock %}
+
+{% block content %}
+    <ul class="breadcrumb">
+        <li><a href="{% url "teams:list" %}">Home</a></li>
+        <li><a href="{% url "teams:list" %}">Teams</a></li>
+        <li class="active">{{ instance.name }}</li>
+    </ul>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="col-sm-6 col-sm-offset-3">
+        <h1>
+            {{ instance.name }}
+            <small>{{ instance.created }}</small>
+        </h1>
+        {% if instance.user.get_full_name %}
+            <p>Author: {{ instance.user.get_full_name }}</p>
+        {% endif %}
+        <p>
+            <a href="{% url "teams:update" id=instance.id %}" class="btn btn-primary" role="button">Edit</a>
+            <a href="{% url "teams:delete" id=instance.id %}" class="btn btn-danger" role="button">Delete</a>
+        </p>
+    </div>
+{% endblock %}
