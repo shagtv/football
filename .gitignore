@@ -1,3 +1,5 @@
 /.idea/
 /teams/migrations/
 db.sqlite3
+*.pyc
+*.pyo
