@@ -18,16 +18,14 @@
     {% endif %}
 
     <div class="col-sm-6 col-sm-offset-3">
-        <h1>
-            {{ instance.name }}
-            <small>{{ instance.created }}</small>
-        </h1>
-        {% if instance.user.get_full_name %}
-            <p>Author: {{ instance.user.get_full_name }}</p>
-        {% endif %}
-        <p>
-            <a href="{% url "teams:update" id=instance.id %}" class="btn btn-primary" role="button">Edit</a>
-            <a href="{% url "teams:delete" id=instance.id %}" class="btn btn-danger" role="button">Delete</a>
-        </p>
+        <form class="form-horizontal" action="{% url "authsys:register" %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+        <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-default">{{ _('Register') }}</button>
+                </div>
+              </div>
+        </form>
     </div>
 {% endblock %}
