@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Football</title>
+    <style type="text/css">
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<canvas id="pitch" width="800" height="518"></canvas>
+<span id="debug"></span>
+<script>
+    (function () {
+        var speed = 6;
+        var moveX = 0;
+        var moveY = 0;
+
+        window.onkeydown = function(e) {
+            if (e.keyCode == 37 && moveX == 0) {
+                moveX = -speed;
+            }
+
+            if (e.keyCode == 38 && moveY == 0) {
+                moveY = -speed;
+            }
+
+            if (e.keyCode == 39 && moveX == 0) {
+                moveX = speed;
+            }
+
+            if (e.keyCode == 40 && moveY == 0) {
+                moveY = speed;
+            }
+        };
+
+        window.onkeyup = function(e) {
+            if (e.keyCode == 37) {
+                moveX = 0;
+            }
+
+            if (e.keyCode == 38) {
+                moveY = 0;
+            }
+
+            if (e.keyCode == 39) {
+                moveX = 0;
+            }
+
+            if (e.keyCode == 40) {
+                moveY = 0;
+            }
+        };
+
+        var players = [];
+        var ws = new WebSocket("ws://localhost:8000/ws");
+        ws.onmessage = function (evt) {
+            var data = JSON.parse(evt.data)
+            if (data['command'] == 'check') {
+                for (i in data['players']) {
+                    if (i in players) {
+                        players[i].x = data['players'][i][0];
+                        players[i].y = data['players'][i][1];
+                    } else {
+                        players[i] = new Player(data['players'][i][0], data['players'][i][1])
+                    }
+                }
+            }
+        };
+
+        ws.onopen = function (evt) {
+            console.log('open')
+            game.start();
+        };
+
+        ws.onerror = function (evt) {
+            console.log('error')
+        };
+
+        var canvas = document.getElementById('pitch');
+        var ctx = canvas.getContext('2d');
+
+        var pitch = {
+            draw: function () {
+
+                // Outer lines
+                ctx.beginPath();
+                ctx.rect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#060";
+                ctx.fill();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = "#FFF";
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.fillStyle = "#FFF";
+
+                // Mid line
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, 0);
+                ctx.lineTo(canvas.width / 2, canvas.height);
+                ctx.stroke();
+                ctx.closePath();
+
+                //Mid circle
+                ctx.beginPath()
+                ctx.arc(canvas.width / 2, canvas.height / 2, 73, 0, 2 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+                //Mid point
+                ctx.beginPath()
+                ctx.arc(canvas.width / 2, canvas.height / 2, 2, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.closePath();
+
+                //Home penalty box
+                ctx.beginPath();
+                ctx.rect(0, (canvas.height - 322) / 2, 132, 322);
+                ctx.stroke();
+                ctx.closePath();
+                //Home goal box
+                ctx.beginPath();
+                ctx.rect(0, (canvas.height - 146) / 2, 44, 146);
+                ctx.stroke();
+                ctx.closePath();
+                //Home goal
+                ctx.beginPath();
+                ctx.moveTo(1, (canvas.height / 2) - 22);
+                ctx.lineTo(1, (canvas.height / 2) + 22);
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.closePath();
+                ctx.lineWidth = 1;
+
+                //Home penalty point
+                ctx.beginPath()
+                ctx.arc(88, canvas.height / 2, 1, 0, 2 * Math.PI, true);
+                ctx.fill();
+                ctx.closePath();
+                //Home half circle
+                ctx.beginPath()
+                ctx.arc(88, canvas.height / 2, 73, 0.29 * Math.PI, 1.71 * Math.PI, true);
+                ctx.stroke();
+                ctx.closePath();
+
+                //Away penalty box
+                ctx.beginPath();
+                ctx.rect(canvas.width - 132, (canvas.height - 322) / 2, 132, 322);
+                ctx.stroke();
+                ctx.closePath();
+                //Away goal box
+                ctx.beginPath();
+                ctx.rect(canvas.width - 44, (canvas.height - 146) / 2, 44, 146);
+                ctx.stroke();
+                ctx.closePath();
+                //Away goal
+                ctx.beginPath();
+                ctx.moveTo(canvas.width - 1, (canvas.height / 2) - 22);
+                ctx.lineTo(canvas.width - 1, (canvas.height / 2) + 22);
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.closePath();
+                ctx.lineWidth = 1;
+                //Away penalty point
+                ctx.beginPath()
+                ctx.arc(canvas.width - 88, canvas.height / 2, 1, 0, 2 * Math.PI, true);
+                ctx.fill();
+                ctx.closePath();
+                //Away half circle
+                ctx.beginPath()
+                ctx.arc(canvas.width - 88, canvas.height / 2, 73, 0.71 * Math.PI, 1.29 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+
+                //Home L corner
+                ctx.beginPath()
+                ctx.arc(0, 0, 8, 0, 0.5 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+                //Home R corner
+                ctx.beginPath()
+                ctx.arc(0, canvas.height, 8, 0, 2 * Math.PI, true);
+                ctx.stroke();
+                ctx.closePath();
+                //Away R corner
+                ctx.beginPath()
+                ctx.arc(canvas.width, 0, 8, 0.5 * Math.PI, 1 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+                //Away L corner
+                ctx.beginPath()
+                ctx.arc(canvas.width, canvas.height, 8, 1 * Math.PI, 1.5 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+            }
+        };
+
+        var ball = {
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height,
+            draw: function () {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, 2 * Math.PI, false);
+                ctx.fillStyle = "#FF0";
+                ctx.fill();
+                ctx.strokeStyle = "#000";
+                ctx.stroke();
+                ctx.closePath();
+            }
+        };
+
+        var Player = function (x, y, speed, team) {
+            this.x = x;
+            this.y = y;
+            this.speed = speed || 2;
+            this.team = team || "home";
+        };
+
+        Player.prototype.draw = function () {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 30, 0, 2 * Math.PI, false);
+            ctx.fillStyle = ((this.team === "home") ? "#00F" : "#F00");
+            ctx.fill();
+            ctx.strokeStyle = "#000";
+            ctx.stroke();
+            ctx.closePath();
+        };
+
+        var game = {
+            timer: {},
+            step: function () {
+                ws.send(JSON.stringify({
+                    'command': 'check',
+                    'moveX': moveX,
+                    'moveY': moveY
+                }))
+                pitch.draw();
+
+                for (i in players) {
+                    players[i].draw();
+                }
+            },
+            start: function () {
+                pitch.draw();
+                this.timer = window.setInterval(this.step, 50);
+            }
+        };
+    })();
+
+</script>
+</body>
+</html>
