@@ -51,7 +51,8 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                 i.y += data['moveY']
             players.append([i.x, i.y])
 
-        self.write_message({'command': 'check', 'players': players})
+        for i in GameWebSocketHandler.connections:
+            i.write_message({'command': 'check', 'players': players})
 
     def send_messages(self, msg):
         for conn in self.connections:

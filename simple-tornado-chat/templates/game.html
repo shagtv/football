@@ -14,7 +14,7 @@
 <span id="debug"></span>
 <script>
     (function () {
-        var speed = 6;
+        var speed = 3;
         var moveX = 0;
         var moveY = 0;
 
@@ -34,6 +34,12 @@
             if (e.keyCode == 40 && moveY == 0) {
                 moveY = speed;
             }
+
+            ws.send(JSON.stringify({
+                'command': 'check',
+                'moveX': moveX,
+                'moveY': moveY
+            }))
         };
 
         window.onkeyup = function(e) {
@@ -52,26 +58,31 @@
             if (e.keyCode == 40) {
                 moveY = 0;
             }
+
+            ws.send(JSON.stringify({
+                'command': 'check',
+                'moveX': moveX,
+                'moveY': moveY
+            }))
         };
 
         var players = [];
         var ws = new WebSocket("ws://localhost:8000/ws");
+
         ws.onmessage = function (evt) {
-            var data = JSON.parse(evt.data)
+            var data = JSON.parse(evt.data);
             if (data['command'] == 'check') {
+                pitch.draw();
+                players = [];
                 for (i in data['players']) {
-                    if (i in players) {
-                        players[i].x = data['players'][i][0];
-                        players[i].y = data['players'][i][1];
-                    } else {
-                        players[i] = new Player(data['players'][i][0], data['players'][i][1])
-                    }
+                    players[i] = new Player(data['players'][i][0], data['players'][i][1])
+                    players[i].draw();
                 }
             }
         };
 
         ws.onopen = function (evt) {
-            console.log('open')
+            console.log('open');
             game.start();
         };
 
@@ -231,11 +242,6 @@
         var game = {
             timer: {},
             step: function () {
-                ws.send(JSON.stringify({
-                    'command': 'check',
-                    'moveX': moveX,
-                    'moveY': moveY
-                }))
                 pitch.draw();
 
                 for (i in players) {
@@ -244,7 +250,7 @@
             },
             start: function () {
                 pitch.draw();
-                this.timer = window.setInterval(this.step, 50);
+                //this.timer = window.setInterval(this.step, 50);
             }
         };
     })();
