@@ -16,7 +16,7 @@ define('port', default=8000, help='run on the given port', type=int)
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r'/game', GameHandler),
+            (r'/', GameHandler),
             (r'/ws', GameWebSocketHandler),
         ]
         settings = dict(

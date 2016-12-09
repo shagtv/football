@@ -67,7 +67,7 @@
         };
 
         var players = [];
-        var ws = new WebSocket("ws://localhost:8000/ws");
+        var ws = new WebSocket("ws://shagtv.net:8000/ws");
 
         ws.onmessage = function (evt) {
             var data = JSON.parse(evt.data);
@@ -249,7 +249,11 @@
                 }
             },
             start: function () {
-                pitch.draw();
+                ws.send(JSON.stringify({
+                    'command': 'check',
+                    'moveX': moveX,
+                    'moveY': moveY
+                }))
                 //this.timer = window.setInterval(this.step, 50);
             }
         };
