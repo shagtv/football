@@ -11,59 +11,115 @@
 </head>
 <body>
 <canvas id="pitch" width="800" height="518"></canvas>
+<div>
+    <label for="name"></label>
+    <input type="text" name="name" id="name" placeholder="name">
+    <button id="save-name">Change name</button>
+</div>
+<div>
+    <button id="start-game">Start</button>
+    <button id="stop-game">Stop</button>
+    <button id="join-game">Join</button>
+    <button id="leave-game">Leave</button>
+</div>
 <span id="debug"></span>
 <script>
     (function () {
+        document.getElementById('start-game').onclick = function () {
+            ws.send(JSON.stringify({
+                'command': 'start'
+            }))
+        };
+
+        document.getElementById('stop-game').onclick = function () {
+            ws.send(JSON.stringify({
+                'command': 'stop'
+            }))
+        };
+
+        document.getElementById('join-game').onclick = function () {
+            ws.send(JSON.stringify({
+                'command': 'join'
+            }))
+        };
+
+        document.getElementById('leave-game').onclick = function () {
+            ws.send(JSON.stringify({
+                'command': 'leave'
+            }))
+        };
+
+        document.getElementById('save-name').onclick = function () {
+            ws.send(JSON.stringify({
+                'command': 'save-name',
+                'name': document.getElementById('name').value
+            }))
+        };
+
         var speed = 3;
         var moveX = 0;
         var moveY = 0;
 
         window.onkeydown = function(e) {
+            var send = false;
             if (e.keyCode == 37 && moveX == 0) {
                 moveX = -speed;
+                send = true;
             }
 
             if (e.keyCode == 38 && moveY == 0) {
                 moveY = -speed;
+                send = true;
             }
 
             if (e.keyCode == 39 && moveX == 0) {
                 moveX = speed;
+                send = true;
             }
 
             if (e.keyCode == 40 && moveY == 0) {
                 moveY = speed;
+                send = true;
             }
 
-            ws.send(JSON.stringify({
-                'command': 'check',
-                'moveX': moveX,
-                'moveY': moveY
-            }))
+            if (send) {
+                ws.send(JSON.stringify({
+                    'command': 'move',
+                    'moveX': moveX,
+                    'moveY': moveY
+                }))
+            }
         };
 
         window.onkeyup = function(e) {
+            var send = false;
             if (e.keyCode == 37) {
                 moveX = 0;
+                send = true;
             }
 
             if (e.keyCode == 38) {
                 moveY = 0;
+                send = true;
             }
 
             if (e.keyCode == 39) {
                 moveX = 0;
+                send = true;
             }
 
             if (e.keyCode == 40) {
                 moveY = 0;
+                send = true;
             }
 
-            ws.send(JSON.stringify({
-                'command': 'check',
-                'moveX': moveX,
-                'moveY': moveY
-            }))
+            if (send) {
+                ws.send(JSON.stringify({
+                    'command': 'move',
+                    'moveX': moveX,
+                    'moveY': moveY
+                }))
+            }
         };
 
         var players = [];
@@ -71,19 +127,29 @@
 
         ws.onmessage = function (evt) {
             var data = JSON.parse(evt.data);
-            if (data['command'] == 'check') {
+            if (data['command'] == 'draw') {
                 pitch.draw();
-                players = [];
-                for (i in data['players']) {
-                    players[i] = new Player(data['players'][i][0], data['players'][i][1])
-                    players[i].draw();
+                for (var i in data['players']) {
+                    var player = new Player(
+                        data['players'][i][0],
+                        data['players'][i][1],
+                        data['players'][i][2],
+                        data['players'][i][3],
+                        data['players'][i][4]
+                    );
+                    player.draw();
                 }
             }
         };
 
         ws.onopen = function (evt) {
             console.log('open');
-            game.start();
+            var name = 'noname' + parseInt(Math.random()*100);
+            document.getElementById('name').value = name;
+            ws.send(JSON.stringify({
+                'command': 'save-name',
+                'name': name
+            }))
         };
 
         ws.onerror = function (evt) {
@@ -116,12 +182,12 @@
                 ctx.closePath();
 
                 //Mid circle
-                ctx.beginPath()
+                ctx.beginPath();
                 ctx.arc(canvas.width / 2, canvas.height / 2, 73, 0, 2 * Math.PI, false);
                 ctx.stroke();
                 ctx.closePath();
                 //Mid point
-                ctx.beginPath()
+                ctx.beginPath();
                 ctx.arc(canvas.width / 2, canvas.height / 2, 2, 0, 2 * Math.PI, false);
                 ctx.fill();
                 ctx.closePath();
@@ -146,12 +212,12 @@
                 ctx.lineWidth = 1;
 
                 //Home penalty point
-                ctx.beginPath()
+                ctx.beginPath();
                 ctx.arc(88, canvas.height / 2, 1, 0, 2 * Math.PI, true);
                 ctx.fill();
                 ctx.closePath();
                 //Home half circle
-                ctx.beginPath()
+                ctx.beginPath();
                 ctx.arc(88, canvas.height / 2, 73, 0.29 * Math.PI, 1.71 * Math.PI, true);
                 ctx.stroke();
                 ctx.closePath();
@@ -175,34 +241,34 @@
                 ctx.closePath();
                 ctx.lineWidth = 1;
                 //Away penalty point
-                ctx.beginPath()
+                ctx.beginPath();
                 ctx.arc(canvas.width - 88, canvas.height / 2, 1, 0, 2 * Math.PI, true);
                 ctx.fill();
                 ctx.closePath();
                 //Away half circle
-                ctx.beginPath()
+                ctx.beginPath();
                 ctx.arc(canvas.width - 88, canvas.height / 2, 73, 0.71 * Math.PI, 1.29 * Math.PI, false);
                 ctx.stroke();
                 ctx.closePath();
 
                 //Home L corner
-                ctx.beginPath()
+                ctx.beginPath();
                 ctx.arc(0, 0, 8, 0, 0.5 * Math.PI, false);
                 ctx.stroke();
                 ctx.closePath();
                 //Home R corner
-                ctx.beginPath()
+                ctx.beginPath();
                 ctx.arc(0, canvas.height, 8, 0, 2 * Math.PI, true);
                 ctx.stroke();
                 ctx.closePath();
                 //Away R corner
-                ctx.beginPath()
-                ctx.arc(canvas.width, 0, 8, 0.5 * Math.PI, 1 * Math.PI, false);
+                ctx.beginPath();
+                ctx.arc(canvas.width, 0, 8, 0.5 * Math.PI, Math.PI, false);
                 ctx.stroke();
                 ctx.closePath();
                 //Away L corner
-                ctx.beginPath()
-                ctx.arc(canvas.width, canvas.height, 8, 1 * Math.PI, 1.5 * Math.PI, false);
+                ctx.beginPath();
+                ctx.arc(canvas.width, canvas.height, 8, Math.PI, 1.5 * Math.PI, false);
                 ctx.stroke();
                 ctx.closePath();
             }
@@ -222,43 +288,26 @@
             }
         };
 
-        var Player = function (x, y, speed, team) {
+        var Player = function (x, y, speed, team, name) {
             this.x = x;
             this.y = y;
             this.speed = speed || 2;
             this.team = team || "home";
+            this.name = name || "noname";
         };
 
         Player.prototype.draw = function () {
             ctx.beginPath();
-            ctx.arc(this.x, this.y, 30, 0, 2 * Math.PI, false);
+            ctx.arc(this.x, this.y, 10, 0, 2 * Math.PI, false);
             ctx.fillStyle = ((this.team === "home") ? "#00F" : "#F00");
             ctx.fill();
             ctx.strokeStyle = "#000";
             ctx.stroke();
+            ctx.fillStyle = "#FFF";
+            ctx.fillText(this.name, this.x + 10, this.y - 10);
             ctx.closePath();
         };
-
-        var game = {
-            timer: {},
-            step: function () {
-                pitch.draw();
-
-                for (i in players) {
-                    players[i].draw();
-                }
-            },
-            start: function () {
-                ws.send(JSON.stringify({
-                    'command': 'check',
-                    'moveX': moveX,
-                    'moveY': moveY
-                }))
-                //this.timer = window.setInterval(this.step, 50);
-            }
-        };
     })();
-
 </script>
 </body>
 </html>
