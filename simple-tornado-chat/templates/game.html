@@ -59,6 +59,8 @@
         var speed = 3;
         var moveX = 0;
         var moveY = 0;
+        var width = 800;
+        var height = 518;
 
         window.onkeydown = function(e) {
             var send = false;
@@ -139,6 +141,9 @@
                     );
                     player.draw();
                 }
+                ball.x = data['ball'][0];
+                ball.y = data['ball'][1];
+                ball.draw();
             }
         };
 
@@ -149,7 +154,7 @@
             ws.send(JSON.stringify({
                 'command': 'save-name',
                 'name': name
-            }))
+            }));
         };
 
         ws.onerror = function (evt) {
