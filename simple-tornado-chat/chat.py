@@ -55,6 +55,11 @@ class Game:
     player_size = 5
     speed = 2
 
+    result = {
+        'home': 0,
+        'guest': 0,
+    }
+
     frames = {
         'home': Position(field_width, field_height / 2),
         'guest': Position(0, field_height / 2),
@@ -143,6 +148,7 @@ class Ball:
     move_y = 0
     speed = Game.speed*2
     in_air = 0
+    is_bad = False
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -240,6 +246,8 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                 Ball.y = Game.field_height/2
                 Ball.move_x = 0
                 Ball.move_y = 0
+                Game.result['home'] = 0
+                Game.result['guest'] = 0
                 GameWebSocketHandler.started = False
                 for p in list(GameWebSocketHandler.connections):
                     if p.role == 'bot':
@@ -271,6 +279,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                                 last_owner.noattack = 3
                                 GameWebSocketHandler.connections.add(last_owner)
                             Ball.free = False
+                            Ball.is_bad = False
                             Ball.owner = p
                             Ball.own = p.team
                             p.has_ball = True
@@ -284,11 +293,14 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                     elif p.team == Ball.own and p.position not in (8, 9) and not Ball.free:
                         if p.role == 'bot':
                             if p is not Ball.owner:
-                                (p.move_x, p.move_y) = Position.move(p, Position(p.pos_x, p.pos_y))
+                                if Position.distance(p, Ball) < Game.max_distance/2:
+                                    (p.move_x, p.move_y) = Position.move(p, Ball)
+                                else:
+                                    (p.move_x, p.move_y) = Position.move(p, Position(p.pos_x, p.pos_y))
                             else:
                                 if p.min_dist_to_enemy() < 50:
                                     p.give_pass()
-                                    p.noattack = 3
+                                    p.noattack = 5
                                 else:
                                     (p.move_x, p.move_y) = Position.move(p, Game.frames[p.team])
                                     frame_pos = Game.frames[p.team]
@@ -307,7 +319,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
 
                     if p.role == 'bot':
                         distance = Position.distance(p, Position(p.pos_x, p.pos_y))
-                        if distance + Game.player_size >= Game.max_distance:
+                        if distance + Game.player_size >= Game.max_distance and (not Ball.is_bad or Ball.own == p.team):
                             if p.has_ball:
                                 p.give_pass()
                             (p.move_x, p.move_y) = Position.move(p, Position(p.pos_x, p.pos_y))
@@ -332,13 +344,27 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                     GameWebSocketHandler.connections.add(p)
 
             if Ball.x + Ball.move_x < 0:
-                Ball.move_x = -Ball.move_x
+                if Ball.y <= Game.field_height/2 + 22 and Ball.y >= Game.field_height/2 - 22:
+                    Game.result['guest'] += 1
+                Ball.move_x = 0
+                Ball.move_y = 0
+                Ball.y = Game.field_height/2
             if Ball.y + Ball.move_y < 0:
+                Ball.move_x = 0
+                Ball.move_y = 0
                 Ball.move_y = -Ball.move_y
+                Ball.is_bad = True
             if Ball.x + Ball.move_x > Game.field_width:
-                Ball.move_x = -Ball.move_x
+                if Ball.y <= Game.field_height/2 + 22 and Ball.y >= Game.field_height/2 - 22:
+                    Game.result['home'] += 1
+                Ball.move_x = 0
+                Ball.move_y = 0
+                Ball.y = Game.field_height / 2
             if Ball.y + Ball.move_y > Game.field_height:
+                Ball.move_x = 0
+                Ball.move_y = 0
                 Ball.move_y = -Ball.move_y
+                Ball.is_bad = True
 
             if Ball.in_air > 0:
                 Ball.in_air -= 1
@@ -346,7 +372,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
             if Ball.free:
                 Ball.x += Ball.move_x
                 Ball.y += Ball.move_y
-        msg = {'command': 'draw', 'players': players, 'ball': [Ball.x, Ball.y]}
+        msg = {'command': 'draw', 'players': players, 'ball': [Ball.x, Ball.y], 'result': Game.result}
 
         for i in GameWebSocketHandler.connections:
             if isinstance(i, GameWebSocketHandler):
