@@ -7,10 +7,21 @@
         canvas {
             border: 1px solid black;
         }
+        #msg-div {
+            position: absolute;
+            left: 810px;
+            top: 10px;
+            width: 300px;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
 <canvas id="pitch" width="800" height="518"></canvas>
+<div id="msg-div">
+    <input type="text" id="msg"><button id="msg-btn">Send</button>
+    <div id="msgs"></div>
+</div>
 <div>
     <h2><span id="result-home">0</span>:<span id="result-guest">0</span></h2>
 </div>
@@ -21,16 +32,36 @@
 </div>
 <div>
     <button id="start-game">Start</button>
+    <button id="pause-game">Pause</button>
     <button id="stop-game">Stop</button>
     <button id="join-game">Join</button>
     <button id="leave-game">Leave</button>
 </div>
+<div>
+    Press <strong>q</strong> to pass, <strong>b</strong> to goal
+</div>
 <span id="debug"></span>
 <script>
     (function () {
+        document.getElementById('msg-btn').onclick = function () {
+            var msg = document.getElementById('msg-btn').value;
+            if (msg) {
+                ws.send(JSON.stringify({
+                    'command': 'msg',
+                    'msg': msg,
+                }))
+            }
+        };
+
         document.getElementById('start-game').onclick = function () {
             ws.send(JSON.stringify({
                 'command': 'start'
+            }))
+        };
+
+        document.getElementById('pause-game').onclick = function () {
+            ws.send(JSON.stringify({
+                'command': 'pause'
             }))
         };
 
@@ -85,6 +116,18 @@
             if (e.keyCode == 40 && moveY == 0) {
                 moveY = speed;
                 send = true;
+            }
+
+            if (e.keyCode == 81) {
+                ws.send(JSON.stringify({
+                    'command': 'pass'
+                }))
+            }
+
+            if (e.keyCode == 87) {
+                ws.send(JSON.stringify({
+                    'command': 'goal'
+                }))
             }
 
             if (send) {

@@ -54,6 +54,7 @@ class Game:
     field_height = 518
     player_size = 5
     speed = 2
+    pause = False
 
     result = {
         'home': 0,
@@ -94,6 +95,8 @@ class Player:
         self.role = 'bot'
         self.has_ball = False
         self.noattack = 0
+        self.dopass = False
+        self.dogoal = False
 
     def is_at(self, point):
         return Position.distance(self, point) <= Game.player_size*2
@@ -219,7 +222,11 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                 player.pos_y = self.pos_y
                 GameWebSocketHandler.connections.add(player)
 
+        elif data['command'] == 'pause':
+            Game.pause = True
+
         elif data['command'] == 'start':
+            Game.pause = False
             if not GameWebSocketHandler.started:
                 GameWebSocketHandler.started = True
                 for pos, i in enumerate(Game.positions):
@@ -260,14 +267,37 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
             self.name = data['name']
             GameWebSocketHandler.connections.add(self)
 
+        elif data['command'] == 'pass':
+            self.dopass = True
+
+        elif data['command'] == 'goal':
+            self.dogoal = True
+
+        elif data['command'] == 'msg':
+            for p in list(GameWebSocketHandler.connections):
+
+
+
     @staticmethod
     def period_run():
+        if Game.pause:
+            return None
+
         players = []
         if GameWebSocketHandler.started:
             for p in list(GameWebSocketHandler.connections):
                 if p.active:
                     if p.noattack > 0:
                         p.noattack -= 1
+
+                    elif p.dopass:
+                        p.give_pass()
+                        p.dogoal = False
+
+                    elif p.dogoal:
+                        p.do_goal()
+                        p.dogoal = False
+
                     elif Ball.in_air == 0 and p.is_at(Ball) and not p.has_ball:
 
                         last_owner = Ball.owner
