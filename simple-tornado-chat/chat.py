@@ -129,6 +129,9 @@ class Player:
         self.has_ball = False
         self.speed = Game.speed
         (Ball.move_x, Ball.move_y) = Position.move(Ball, Game.frames[self.team])
+        self.move_x = 0
+        self.move_y = 0
+        self.noattack = 3
 
     def min_dist_to_enemy(self):
         best_distance = None
@@ -307,7 +310,6 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                         p.dogoal = False
 
                     elif Ball.in_air == 0 and p.is_at(Ball) and not p.has_ball:
-
                         last_owner = Ball.owner
                         if not last_owner or random.randrange(2) == 1:
                             if last_owner:
@@ -346,8 +348,6 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                                     finish_distance = Position.distance(p, Position(frame_pos.x, p.y))
                                     if frame_distance < 100 or finish_distance < 50:
                                         p.do_goal()
-                                        p.move_x = 0
-                                        p.move_y = 0
                     else:
                         if p.role == 'bot':
                             if p.position != 0 or Position.distance(p, Ball) < 200:
@@ -387,6 +387,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                 Ball.move_x = 0
                 Ball.move_y = 0
                 Ball.y = Game.field_height/2
+                Ball.x = 20
             if Ball.y + Ball.move_y < 0:
                 Ball.move_x = 0
                 Ball.move_y = 0
@@ -398,6 +399,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                 Ball.move_x = 0
                 Ball.move_y = 0
                 Ball.y = Game.field_height / 2
+                Ball.x = Game.field_width - 20
             if Ball.y + Ball.move_y > Game.field_height:
                 Ball.move_x = 0
                 Ball.move_y = 0
