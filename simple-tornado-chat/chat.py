@@ -2,9 +2,9 @@ import json
 import os.path
 
 import random
+from datetime import datetime
 from math import sqrt, acos, cos, sin
 from time import sleep
-
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
@@ -274,7 +274,15 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
             self.dogoal = True
 
         elif data['command'] == 'msg':
-            for p in list(GameWebSocketHandler.connections):
+            msg = {
+                'command': 'msg',
+                'msg': data['msg'],
+                'author': self.name,
+                'dt': datetime.now().isoformat(sep=' ')[11:-7]
+            }
+            for i in GameWebSocketHandler.connections:
+                if isinstance(i, GameWebSocketHandler):
+                    i.write_message(msg)
 
 
 

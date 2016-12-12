@@ -9,9 +9,9 @@
         }
         #msg-div {
             position: absolute;
-            left: 810px;
+            left: 820px;
             top: 10px;
-            width: 300px;
+            width: 400px;
             height: 100%;
         }
     </style>
@@ -44,12 +44,13 @@
 <script>
     (function () {
         document.getElementById('msg-btn').onclick = function () {
-            var msg = document.getElementById('msg-btn').value;
+            var msg = document.getElementById('msg').value;
             if (msg) {
                 ws.send(JSON.stringify({
                     'command': 'msg',
                     'msg': msg,
-                }))
+                }));
+                document.getElementById('msg').value = '';
             }
         };
 
@@ -130,6 +131,10 @@
                 }))
             }
 
+            if (e.keyCode == 13) {
+                document.getElementById('msg-btn').onclick();
+            }
+
             if (send) {
                 ws.send(JSON.stringify({
                     'command': 'move',
@@ -159,6 +164,10 @@
             if (e.keyCode == 40) {
                 moveY = 0;
                 send = true;
+            }
+
+            if (e.keyCode == 192) {
+                document.getElementById('msg').focus();
             }
 
             if (send) {
@@ -192,6 +201,12 @@
                 ball.draw();
                 document.getElementById('result-home').innerHTML = data['result']['home'];
                 document.getElementById('result-guest').innerHTML = data['result']['guest'];
+            } else if (data['command'] == 'msg') {
+                var html = '<p><strong>' + data['author'] + '</strong> (' + data['dt'] + '): ';
+                html += data['msg'] + '</p>';
+                console.log(data);
+                console.log(html);
+                document.getElementById('msgs').innerHTML += html
             }
         };
 
