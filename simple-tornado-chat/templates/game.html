@@ -19,6 +19,7 @@
 <body>
 <canvas id="pitch" width="800" height="518"></canvas>
 <div id="msg-div">
+    <p>Online: <strong id="ccu">0</strong></p>
     <input type="text" id="msg"><button id="msg-btn">Send</button>
     <div id="msgs"></div>
 </div>
@@ -201,6 +202,7 @@
                 ball.draw();
                 document.getElementById('result-home').innerHTML = data['result']['home'];
                 document.getElementById('result-guest').innerHTML = data['result']['guest'];
+                document.getElementById('ccu').innerHTML = data['ccu'];
             } else if (data['command'] == 'msg') {
                 var html = '<p><strong>' + data['author'] + '</strong> (' + data['dt'] + '): ';
                 html += data['msg'] + '</p>';

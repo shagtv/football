@@ -411,7 +411,13 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
             if Ball.free:
                 Ball.x += Ball.move_x
                 Ball.y += Ball.move_y
-        msg = {'command': 'draw', 'players': players, 'ball': [Ball.x, Ball.y], 'result': Game.result}
+        msg = {
+            'command': 'draw',
+            'players': players,
+            'ball': [Ball.x, Ball.y],
+            'result': Game.result,
+            'ccu': len([i for i in GameWebSocketHandler.connections if isinstance(i, GameWebSocketHandler)])
+        }
 
         for i in GameWebSocketHandler.connections:
             if isinstance(i, GameWebSocketHandler):
