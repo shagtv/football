@@ -55,7 +55,7 @@ class Game:
     player_size = 5
     speed = 2
     pause = False
-
+    msgs = []
     result = {
         'home': 0,
         'guest': 0,
@@ -188,6 +188,8 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
         self.role = 'player'
         self.active = False
 
+        for msg in Game.msgs:
+            self.write_message(msg)
         GameWebSocketHandler.connections.add(self)
 
     def on_close(self):
@@ -281,6 +283,9 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                 'author': self.name,
                 'dt': datetime.now().isoformat(sep=' ')[11:-7]
             }
+
+            Game.msgs.append(msg)
+
             for i in GameWebSocketHandler.connections:
                 if isinstance(i, GameWebSocketHandler):
                     i.write_message(msg)
