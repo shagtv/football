@@ -111,7 +111,7 @@ class Player:
                 if best_distance is None or p1_distance < best_distance:
                     best_distance = p1_distance
                     best = p1
-
+        Ball.lastowner = Ball.owner
         Ball.owner = None
         Ball.free = True
         self.has_ball = False
@@ -127,6 +127,7 @@ class Player:
             return best
 
     def do_goal(self):
+        Ball.lastowner = Ball.owner
         Ball.owner = None
         Ball.free = True
         self.has_ball = False
@@ -153,6 +154,7 @@ class Ball:
     free = True
     own = None
     owner = None
+    lastowner = None
     move_x = 0
     move_y = 0
     speed = Game.speed*2
@@ -193,6 +195,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
         GameWebSocketHandler.connections.add(self)
 
     def on_close(self):
+        GameWebSocketHandler.send_msg(self.name + ' left game', 'System')
         GameWebSocketHandler.connections.remove(self)
 
     def on_message(self, msg):
@@ -268,6 +271,12 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                         p.active = False
 
         elif data['command'] == 'save-name':
+            if self.name != data['name']:
+                if 'first' in data:
+                    text = data['name'] + ' join game'
+                else:
+                    text = self.name + ' change name to ' + data['name']
+                GameWebSocketHandler.send_msg(text, 'System')
             self.name = data['name']
 
         elif data['command'] == 'pass':
@@ -277,20 +286,22 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
             self.dogoal = True
 
         elif data['command'] == 'msg':
-            msg = {
-                'command': 'msg',
-                'msg': data['msg'],
-                'author': self.name,
-                'dt': datetime.now().isoformat(sep=' ')[11:-7]
-            }
+            GameWebSocketHandler.send_msg(data['msg'], self.name)
 
-            Game.msgs.append(msg)
+    @staticmethod
+    def send_msg(text, author):
+        msg = {
+            'command': 'msg',
+            'msg': text,
+            'author': author,
+            'dt': datetime.now().isoformat(sep=' ')[11:-7]
+        }
 
-            for i in GameWebSocketHandler.connections:
-                if isinstance(i, GameWebSocketHandler):
-                    i.write_message(msg)
+        Game.msgs.append(msg)
 
-
+        for i in GameWebSocketHandler.connections:
+            if isinstance(i, GameWebSocketHandler):
+                i.write_message(msg)
 
     @staticmethod
     def period_run():
@@ -388,6 +399,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
             if Ball.x + Ball.move_x < 0:
                 if Ball.y <= Game.field_height/2 + 22 and Ball.y >= Game.field_height/2 - 22:
                     Game.result['guest'] += 1
+                    GameWebSocketHandler.send_msg(Ball.lastowner.name + '(guest) has scored a goal', 'System')
                 Ball.move_x = 0
                 Ball.move_y = 0
                 Ball.y = Game.field_height/2
@@ -400,6 +412,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
             if Ball.x + Ball.move_x > Game.field_width:
                 if Ball.y <= Game.field_height/2 + 22 and Ball.y >= Game.field_height/2 - 22:
                     Game.result['home'] += 1
+                    GameWebSocketHandler.send_msg(Ball.lastowner.name + '(home) has scored a goal', 'System')
                 Ball.move_x = 0
                 Ball.move_y = 0
                 Ball.y = Game.field_height / 2
@@ -416,6 +429,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
             if Ball.free:
                 Ball.x += Ball.move_x
                 Ball.y += Ball.move_y
+
         msg = {
             'command': 'draw',
             'players': players,

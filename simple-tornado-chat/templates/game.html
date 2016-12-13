@@ -208,7 +208,7 @@
                 html += data['msg'] + '</p>';
                 console.log(data);
                 console.log(html);
-                document.getElementById('msgs').innerHTML += html
+                document.getElementById('msgs').innerHTML = html + document.getElementById('msgs').innerHTML
             }
         };
 
@@ -218,7 +218,8 @@
             document.getElementById('name').value = name;
             ws.send(JSON.stringify({
                 'command': 'save-name',
-                'name': name
+                'name': name,
+                'first': true
             }));
         };
 
