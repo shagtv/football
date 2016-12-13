@@ -301,7 +301,10 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
 
         for i in GameWebSocketHandler.connections:
             if isinstance(i, GameWebSocketHandler):
-                i.write_message(msg)
+                try:
+                    i.write_message(msg)
+                except:
+                    pass
 
     @staticmethod
     def period_run():
@@ -440,7 +443,10 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
 
         for i in GameWebSocketHandler.connections:
             if isinstance(i, GameWebSocketHandler):
-                i.write_message(msg)
+                try:
+                    i.write_message(msg)
+                except:
+                    pass
 
 def main():
     parse_command_line()
