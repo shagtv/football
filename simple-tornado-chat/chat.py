@@ -15,14 +15,14 @@ from tornado.options import define, options, parse_command_line
 
 define('port', default=8000, help='run on the given port', type=int)
 
-class Position:
+class Position(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
     @staticmethod
     def distance(a, b):
-        return int(sqrt((a.x - b.x)**2 + (a.y - b.y)**2))
+        return float(sqrt((a.x - b.x)**2 + (a.y - b.y)**2))
 
     @staticmethod
     def move(this, point):
@@ -46,9 +46,9 @@ class Position:
             x *= -1
             y *= -1
 
-        return (int(x), int(y))
+        return (x, y)
 
-class Game:
+class Game(object):
     field_width = 800
     max_distance = 150
     field_height = 518
@@ -80,7 +80,7 @@ class Game:
         Position(0.2, 0.72),
     ]
 
-class Player:
+class Player(object):
     teams = ('home', 'guest')
 
     def __init__(self):
@@ -148,7 +148,7 @@ class Player:
 
         return best_distance
 
-class Ball:
+class Ball(object):
     x = Game.field_width/2
     y = Game.field_height/2
     free = True
