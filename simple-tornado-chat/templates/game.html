@@ -214,7 +214,7 @@
 
         ws.onopen = function (evt) {
             console.log('open');
-            var name = 'noname' + parseInt(Math.random()*100);
+            var name = '' + parseInt(Math.random()*100) + '*';
             document.getElementById('name').value = name;
             ws.send(JSON.stringify({
                 'command': 'save-name',
