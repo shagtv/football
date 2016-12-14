@@ -48,6 +48,23 @@ class Position(object):
 
         return (x, y)
 
+    @staticmethod
+    def min_dist_to_enemy(this, point):
+        a = this.y - point.y
+        b = point.x - this.x
+        c = this.x * point.y - point.x * this.y
+        d = ((this.x - point.x) ** 2 + (this.y - point.y) ** 2) ** 0.5
+    
+        min = Game.field_width
+    
+        for i in GameWebSocketHandler.connections:
+            if i.active and i.team != this.team:
+                dist = abs((a * i.x + b * i.y + c) / d)
+                if dist < min:
+                    min = dist
+    
+        return min
+
 class Game(object):
     field_width = 800
     max_distance = 150
