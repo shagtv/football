@@ -216,7 +216,7 @@ class Player(object):
     def check_violation(self):
         for p1 in list(GameWebSocketHandler.connections):
             if p1.active and p1.team != self.team and self.is_at(p1):
-                if random.randrange(0, 15) == 2:
+                if random.randrange(0, 20) == 2:
                     Game.violation_player = self
                     Game.violation_count = 50
                     Ball.move_x = 0
@@ -349,6 +349,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                 Game.result['home'] = 0
                 Game.result['guest'] = 0
                 GameWebSocketHandler.started = False
+                Game.msgs = []
                 for p in list(GameWebSocketHandler.connections):
                     if p.role == 'bot':
                         GameWebSocketHandler.connections.remove(p)
