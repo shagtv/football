@@ -126,6 +126,17 @@ class Player(object):
     def is_at(self, point):
         return Position.distance(self, point) <= Game.player_size*2
 
+    def allow_pass(self, p1):
+        flame_x = Game.frames[self.team].x
+        half_width = Game.field_width / 2.0
+        if p1.team == self.team and p1 is not self and p1.position != 0:
+            if (flame_x == Game.field_width and self.x <= half_width) \
+                    or (flame_x == Game.field_width and self.x >= half_width and p1.x >= Game.field_width / 2.0) \
+                    or (flame_x == 0 and self.x >= half_width) \
+                    or (flame_x == 0 and self.x <= half_width and p1.x <= Game.field_width / 2.0):
+                return True
+        return False
+
     def give_pass(self, player = None):
         best = None
         best_distance = None
@@ -181,22 +192,26 @@ class Player(object):
         best = None
         min = 0
         for p1 in list(GameWebSocketHandler.connections):
-            if p1.active and p1.team == self.team and p1 is not self and p1.position != 0:
-                dist = Position.min_dist_to_enemy(self, p1)
-                if dist > min:
-                    min = dist
-                    best = p1
+            if p1.active:
+                if self.allow_pass(p1):
+                    dist = Position.min_dist_to_enemy(self, p1)
+                    if dist > min:
+                        min = dist
+                        best = p1
         return (best, min)
 
     def is_need_move(self):
         self_dist = Position.distance(self, Ball)
         closer_count = 0
+        good_count = 0
         for p1 in list(GameWebSocketHandler.connections):
-            if p1.active and p1.team == self.team and p1 is not self:
+            if p1.active and p1.team == self.team and p1 is not self and self_dist < Game.field_width/2.0:
                 dist = Position.distance(p1, Ball)
                 if dist < self_dist:
                     closer_count += 1
-        return closer_count < 2
+                    if Ball.move_x == 0 or (p1.move_x >= 0 and Ball.move_x <= 0) or (p1.move_x <= 0 and Ball.move_x >= 0):
+                        good_count += 1
+        return closer_count < 3 and good_count < 2
 
     def check_violation(self):
         for p1 in list(GameWebSocketHandler.connections):
@@ -409,7 +424,7 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
 
                     elif Ball.in_air == 0 and p.is_at(Ball) and not p.has_ball and (not Ball.is_bad or Ball.lastowner.team != p.team):
                         last_owner = Ball.owner
-                        if not last_owner or random.randrange(2) == 1:
+                        if not last_owner or random.randrange(3) == 1:
                             if last_owner:
                                 last_owner.has_ball = False
                                 last_owner.move_x = 0
@@ -449,7 +464,9 @@ class GameWebSocketHandler(tornado.websocket.WebSocketHandler, tornado.web.Reque
                                     frame_pos = Game.frames[p.team]
                                     frame_distance = Position.distance(p, frame_pos)
                                     finish_distance = Position.distance(p, Position(frame_pos.x, p.y))
-                                    if frame_distance < 100 or finish_distance < 50 or Position.min_dist_to_enemy(p, frame_pos) > 20:
+                                    if frame_distance < 100 or finish_distance < 100 or Position.min_dist_to_enemy(p, frame_pos) > 10:
+                                        p.do_goal()
+                                    elif frame_distance < 50 or finish_distance < 50:
                                         p.do_goal()
                     else:
                         if p.role == 'bot':
@@ -536,7 +553,7 @@ def main():
     app.listen(options.port)
 
     loop = tornado.ioloop.IOLoop.instance()
-    period_cbk = tornado.ioloop.PeriodicCallback(GameWebSocketHandler.period_run, 20, loop)
+    period_cbk = tornado.ioloop.PeriodicCallback(GameWebSocketHandler.period_run, 50, loop)
     period_cbk.start()
     loop.start()
 
