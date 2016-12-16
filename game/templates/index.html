@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Football</title>
+    <link type="text/css" href="/static/style.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
+<body>
+<canvas id="pitch" width="800" height="518"></canvas>
+<div id="msg-block">
+    <p>Online: <strong id="ccu">0</strong></p>
+    <input type="text" id="msg" title="Enter your message">
+    <button id="msg-btn">Send</button>
+    <div id="msgs"></div>
+</div>
+<div id="result-block">
+    <h2><span id="result-home">0</span>:<span id="result-guest">0</span></h2>
+</div>
+<div id="name-block">
+    <label for="name"></label>
+    <input type="text" name="name" id="name" placeholder="name">
+    <button id="save-name">Change name</button>
+</div>
+<div id="actions-block">
+    <button id="create-game">Create</button>
+    <button id="start-game">Start</button>
+    <button id="pause-game">Pause</button>
+    <button id="stop-game">Stop</button>
+    <button id="join-game">Join</button>
+    <button id="leave-game">Leave</button>
+</div>
+<div id="games-block"></div>
+<div id="help-block">
+    Press <strong>q</strong> to pass, <strong>b</strong> to goal
+</div>
+<script src="/static/script.js"></script>
+</body>
+</html>

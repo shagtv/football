@@ -1,0 +1,15 @@
+canvas {
+    border: 1px solid black;
+}
+
+#pitch, #msg-block, #result-block, #help-block, #name-block {
+    display: none;
+}
+
+#msg-div {
+    position: absolute;
+    left: 820px;
+    top: 10px;
+    width: 400px;
+    height: 100%;
+}
