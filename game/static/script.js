@@ -1,17 +1,36 @@
-(function () {
+$(function () {
     var speed = 3;
     var moveX = 0;
     var moveY = 0;
 
     var players = [];
     var ws = new WebSocket("ws://shagtv.net:8000/ws");
+    var mode;
+    var gameId;
+
+    setInterval(function() {
+        if (mode === 'list') {
+            ws.send(JSON.stringify({
+            'command': 'game-list'
+        }));
+        }
+    }, 1000);
+
+    setInterval(function() {
+        if (mode === 'game') {
+            ws.send(JSON.stringify({
+            'command': 'game-info',
+            'id': gameId
+        }));
+        }
+    }, 50);
 
     ws.onmessage = function (evt) {
         var data = JSON.parse(evt.data);
         if (data['command'] == 'draw') {
             pitch.draw();
 
-            data['players'].each(function(data) {
+            data['players'].forEach(function(data) {
                 var player = new Player(
                     data[0],
                     data[1],
@@ -23,42 +42,44 @@
             ball.x = data['ball'][0];
             ball.y = data['ball'][1];
             ball.draw();
-            document.getElementById('result-home').innerHTML = data['result']['home'];
-            document.getElementById('result-guest').innerHTML = data['result']['guest'];
-            document.getElementById('ccu').innerHTML = data['ccu'];
+            $('result-home').html(data['result']['home']);
+            $('result-guest').html(data['result']['guest']);
+            $('ccu').html(data['ccu']);
         } else if (data['command'] == 'msg') {
             var html = '<p><strong>' + data['author'] + '</strong> (' + data['dt'] + '): ';
             html += data['msg'] + '</p>';
             console.log(data);
             console.log(html);
-            document.getElementById('msgs').innerHTML = html + document.getElementById('msgs').innerHTML
+            $('#msgs').html(html + $('#msgs').html())
         } else if (data['command'] == 'game-list') {
             var html = '';
             data['games'].forEach(function (game) {
-                html += '<p id="game-' + game[0] + '">';
+                html += '<p>';
                 html += game[0] + ' (created: ' + game[1] + ') ';
-                html += '<button>Open</button>';
+                html += '' + game[2]['home'] + ':' + game[2]['guest'] + ' ';
+                html += '<button class="game-open" data-id="' + game[0] + '">Open</button>';
+                html += '<button class="game-command" data-command="start" data-id="' + game[0] + '">Start</button>';
+                html += '<button class="game-command" data-command="pause" data-id="' + game[0] + '">Pause</button>';
+                html += '<button class="game-command" data-command="stop" data-id="' + game[0] + '">Stop</button>';
+                html += '<button class="game-command" data-command="join" data-id="' + game[0] + '">Join</button>';
+                html += '<button class="game-command" data-command="leave" data-id="' + game[0] + '">Leave</button>';
                 html += '</p>';
             });
-            document.getElementById('games-block').innerHTML = html;
+            $('#games-block').html(html);
         }
     };
 
     ws.onopen = function () {
         console.log('open');
         var name = '' + parseInt(Math.random() * 100) + '*';
-        document.getElementById('name').value = name;
+        $('#name').val(name);
         ws.send(JSON.stringify({
             'command': 'save-name',
             'name': name,
             'first': true
         }));
 
-        ws.send(JSON.stringify({
-            'command': 'game-list',
-            'name': name,
-            'first': true
-        }));
+        mode = 'list'
     };
 
     ws.onerror = function (evt) {
@@ -251,7 +272,7 @@
         }
 
         if (e.keyCode == 13) {
-            document.getElementById('msg-btn').onclick();
+            $('#msg-btn').click();
         }
 
         if (send) {
@@ -286,7 +307,7 @@
         }
 
         if (e.keyCode == 192) {
-            document.getElementById('msg').focus();
+            $('#msg').focus();
         }
 
         if (send) {
@@ -298,57 +319,52 @@
         }
     };
 
-    document.getElementById('msg-btn').onclick = function () {
+    $('#msg-btn').on('click', function () {
         var msg = document.getElementById('msg').value;
         if (msg) {
             ws.send(JSON.stringify({
                 'command': 'msg',
                 'msg': msg
             }));
-            document.getElementById('msg').value = '';
+            $('#msg').val('');
         }
-    };
+    });
 
-    document.getElementById('create-game').onclick = function () {
+    $('#game-list').on('click', function () {
+        gameId = undefined;
+        mode = 'list';
+        $('#pitch').hide();
+        $('#result-block').hide();
+        $('#games-block').show();
+        $('#game-list').hide();
+    });
+
+   $('#games-block').on('click', '.game-open', function () {
+        gameId = $(this).data('id');
+        mode = 'game';
+        $('#pitch').show();
+        $('#result-block').show();
+        $('#game-list').show();
+        $('#games-block').hide();
+    });
+
+   $('#games-block').on('click', '.game-command', function () {
+        ws.send(JSON.stringify({
+            'command': $(this).data('command'),
+            'id': $(this).data('id')
+        }))
+    });
+
+   $('#game-create').on('click', function () {
         ws.send(JSON.stringify({
             'command': 'create'
         }))
-    };
+    });
 
-    document.getElementById('start-game').onclick = function () {
-        ws.send(JSON.stringify({
-            'command': 'start'
-        }))
-    };
-
-    document.getElementById('pause-game').onclick = function () {
-        ws.send(JSON.stringify({
-            'command': 'pause'
-        }))
-    };
-
-    document.getElementById('stop-game').onclick = function () {
-        ws.send(JSON.stringify({
-            'command': 'stop'
-        }))
-    };
-
-    document.getElementById('join-game').onclick = function () {
-        ws.send(JSON.stringify({
-            'command': 'join'
-        }))
-    };
-
-    document.getElementById('leave-game').onclick = function () {
-        ws.send(JSON.stringify({
-            'command': 'leave'
-        }))
-    };
-
-    document.getElementById('save-name').onclick = function () {
+    $('#save-name').on('click', function () {
         ws.send(JSON.stringify({
             'command': 'save-name',
-            'name': document.getElementById('name').value
+            'name': $('#name').val()
         }))
-    };
-})();
+    });
+});
