@@ -42,9 +42,9 @@ $(function () {
             ball.x = data['ball'][0];
             ball.y = data['ball'][1];
             ball.draw();
-            $('result-home').html(data['result']['home']);
-            $('result-guest').html(data['result']['guest']);
-            $('ccu').html(data['ccu']);
+            $('#result-home').html(data['result']['home']);
+            $('#result-guest').html(data['result']['guest']);
+            $('#ccu').html(data['ccu']);
         } else if (data['command'] == 'msg') {
             var html = '<p><strong>' + data['author'] + '</strong> (' + data['dt'] + '): ';
             html += data['msg'] + '</p>';
