@@ -35,3 +35,42 @@ class Commands(object):
                     'result': game.result,
                 }
                 self.write_message(msg)
+
+    @staticmethod
+    def start(self, id):
+        for game in application.games:
+            if game.id == id:
+                game.pause = False
+
+    @staticmethod
+    def pause(self, id):
+        for game in application.games:
+            if game.id == id:
+                game.pause = True
+
+    @staticmethod
+    def join(self, id):
+        for game in application.games:
+            if game.id == id:
+                for p in game.players:
+                    if p.conn is None:
+                        p.conn = self
+                        break
+
+    @staticmethod
+    def leave(self, id):
+        for game in application.games:
+            if game.id == id:
+                for p in game.players:
+                    if self == p.conn:
+                        p.conn = None
+                        break
+
+    @staticmethod
+    def move(self, id):
+        for game in application.games:
+            if game.id == id:
+                for p in game.players:
+                    if self == p.conn:
+                        p.conn = None
+                        break

@@ -58,11 +58,6 @@ $(function () {
                 html += game[0] + ' (created: ' + game[1] + ') ';
                 html += '' + game[2]['home'] + ':' + game[2]['guest'] + ' ';
                 html += '<button class="game-open" data-id="' + game[0] + '">Open</button>';
-                html += '<button class="game-command" data-command="start" data-id="' + game[0] + '">Start</button>';
-                html += '<button class="game-command" data-command="pause" data-id="' + game[0] + '">Pause</button>';
-                html += '<button class="game-command" data-command="stop" data-id="' + game[0] + '">Stop</button>';
-                html += '<button class="game-command" data-command="join" data-id="' + game[0] + '">Join</button>';
-                html += '<button class="game-command" data-command="leave" data-id="' + game[0] + '">Leave</button>';
                 html += '</p>';
             });
             $('#games-block').html(html);
@@ -337,6 +332,7 @@ $(function () {
         $('#result-block').hide();
         $('#games-block').show();
         $('#game-list').hide();
+        $('#game-buttons').hide();
     });
 
    $('#games-block').on('click', '.game-open', function () {
@@ -346,12 +342,13 @@ $(function () {
         $('#result-block').show();
         $('#game-list').show();
         $('#games-block').hide();
+        $('#game-buttons').show();
     });
 
-   $('#games-block').on('click', '.game-command', function () {
+   $('.game-command').on('click', function () {
         ws.send(JSON.stringify({
             'command': $(this).data('command'),
-            'id': $(this).data('id')
+            'id': gameId
         }))
     });
 
