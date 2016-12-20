@@ -1,16 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import random
-import threading
 from model.position import Position
 
 
-class Player(threading.Thread):
+class Player(object):
     speed = 2.0
     size = 5
 
     def __init__(self, team='home'):
-        threading.Thread.__init__(self)
         self.x = random.randrange(30, 700)
         self.y = random.randrange(30, 500)
         self.pos_x = 0
@@ -25,6 +23,7 @@ class Player(threading.Thread):
         self.game = None
         self.dopass = False
         self.dogoal = False
+        self.position = 0
 
     def is_at(self, point):
         return Position.distance(self, point) <= Player.size*2
@@ -125,14 +124,12 @@ class Player(threading.Thread):
                     self.game.ball.move_x = 0
                     self.game.ball.move_y = 0
 
-    def run(self):
-        print("Starting " + self.name)
-
+    def step(self):
         if self.game.violation_count > 0:
             self.game.ball.move_x = 0
             self.game.ball.move_y = 0
             if self.game.violation_player == self:
-                (self.move_x, self.move_y) = Position.move(self, game.ball)
+                (self.move_x, self.move_y) = Position.move(self, self.game.ball)
             else:
                 (self.move_x, self.move_y) = self.move_to_home()
 
@@ -157,15 +154,15 @@ class Player(threading.Thread):
                     last_owner.move_y = 0
                     last_owner.noattack = 5
                 self.game.ball.free = False
-        
+
                 if self.game.ball.is_bad:
                     self.game.violation_count = 30
 
-                    self.game.ball.is_bad = False
-                    self.game.ball.owner = self
-                    self.game.ball.own = self.team
+                self.game.ball.is_bad = False
+                self.game.ball.owner = self
+                self.game.ball.own = self.team
                 self.has_ball = True
-        
+
                 if self.conn is None:
                     if self.position == 0:
                         self.give_pass()
@@ -177,7 +174,7 @@ class Player(threading.Thread):
                 if self is not self.game.ball.owner:
                     if self.is_need_move():
                         (self.move_x, self.move_y) = Position.move(self, Position(self.game.ball.x + self.game.ball.move_y,
-                                                                                  self.game.ball.y + self.game.ball.move_y))
+                                                                         self.game.ball.y + self.game.ball.move_y))
                     else:
                         (self.move_x, self.move_y) = self.move_to_home()
                 else:
@@ -188,7 +185,7 @@ class Player(threading.Thread):
                         self.noattack = 5
                     else:
                         (self.move_x, self.move_y) = Position.move(self, self.game.frames[self.team])
-                
+
                         frame_pos = self.game.frames[self.team]
                         frame_distance = Position.distance(self, frame_pos)
                         finish_distance = Position.distance(self, Position(frame_pos.x, self.y))
@@ -202,7 +199,7 @@ class Player(threading.Thread):
                 if (self.position == 0 and Position.distance(self, self.game.ball) < 100) or (
                         self.position != 0 and self.is_need_move()):
                     (self.move_x, self.move_y) = Position.move(self, Position(self.game.ball.x + self.game.ball.move_y,
-                                                                              self.game.ball.y + self.game.ball.move_y))
+                                                                     self.game.ball.y + self.game.ball.move_y))
                 else:
                     (self.move_x, self.move_y) = self.move_to_home()
 
@@ -221,11 +218,3 @@ class Player(threading.Thread):
         if self.has_ball:
             self.game.ball.x = self.x
             self.game.ball.y = self.y
-     
-        print("Exiting " + self.name)
-
-
-class PlayerThread(threading.Thread):
-    def __init__(self, p):
-        threading.Thread.__init__(self)
-        self.p = p

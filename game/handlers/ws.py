@@ -45,49 +45,6 @@ class GameHandler(websocket.WebSocketHandler, web.RequestHandler):
                 game.violation_count -= 1
 
             for p in list(game.players):
-                p.start()
-                p.join()
+                p.step()
 
-            if game.ball.x + game.ball.move_x < 0:
-                if game.ball.y <= Game.field_height/2 + 22 and game.ball.y >= Game.field_height/2 - 22:
-                    game.result['guest'] += 1
-                    game.violation_count = 30
-                game.ball.move_x = 0
-                game.ball.move_y = 0
-                game.ball.y = Game.field_height/2
-                game.ball.x = 20
-            if game.ball.y + game.ball.move_y < 0:
-                game.ball.move_x = 0
-                game.ball.move_y = 0
-                game.ball.move_y = -game.ball.move_y
-                game.ball.is_bad = True
-            if game.ball.x + game.ball.move_x > Game.field_width:
-                if game.ball.y <= Game.field_height/2 + 22 and game.ball.y >= Game.field_height/2 - 22:
-                    game.result['home'] += 1
-                game.ball.move_x = 0
-                game.ball.move_y = 0
-                game.ball.y = Game.field_height / 2
-                game.ball.x = Game.field_width - 20
-            if game.ball.y + game.ball.move_y > Game.field_height:
-                game.ball.move_x = 0
-                game.ball.move_y = 0
-                game.ball.move_y = -game.ball.move_y
-                game.ball.is_bad = True
-
-            if game.ball.in_air > 0:
-                game.ball.in_air -= 1
-
-            if game.ball.free:
-                game.ball.x += game.ball.move_x
-                game.ball.y += game.ball.move_y
-
-                game.ball.move_x *= 0.97
-                game.ball.move_y *= 0.97
-
-
-class myThread(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-    def run(self):
-        print(1)
-        
+            game.ball.step()

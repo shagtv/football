@@ -46,6 +46,7 @@ class Game(object):
     def fill_players(self):
         for pos, i in enumerate(Game.positions):
             player = Player()
+            player.name = str(pos)
             player.x = int(Game.field_width * i.x)
             player.y = int(Game.field_height * i.y)
             player.position = pos
@@ -57,6 +58,7 @@ class Game(object):
 
         for pos, i in enumerate(Game.positions):
             player = Player('guest')
+            player.name = str(20 + pos)
             player.x = int(Game.field_width * (1 - i.x))
             player.y = int(Game.field_height * (1 - i.y))
             player.position = pos
