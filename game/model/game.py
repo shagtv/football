@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 import random
 from datetime import datetime
-
-from model.Position import Position
+from model.position import Position
 from model.ball import Ball
 from model.player import Player
 

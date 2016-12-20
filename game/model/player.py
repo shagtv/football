@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import random
+import threading
+from model.position import Position
 
-from model.Position import Position
 
-class Player(object):
+class Player(threading.Thread):
     speed = 2.0
     size = 5
 
     def __init__(self, team='home'):
+        threading.Thread.__init__(self)
         self.x = random.randrange(30, 700)
         self.y = random.randrange(30, 500)
         self.pos_x = 0
@@ -122,3 +124,108 @@ class Player(object):
                     self.game.violation_count = 50
                     self.game.ball.move_x = 0
                     self.game.ball.move_y = 0
+
+    def run(self):
+        print("Starting " + self.name)
+
+        if self.game.violation_count > 0:
+            self.game.ball.move_x = 0
+            self.game.ball.move_y = 0
+            if self.game.violation_player == self:
+                (self.move_x, self.move_y) = Position.move(self, game.ball)
+            else:
+                (self.move_x, self.move_y) = self.move_to_home()
+
+        elif self.noattack > 0:
+            self.noattack -= 1
+
+        elif self.dopass:
+            self.give_pass()
+            self.dogoal = False
+
+        elif self.dogoal:
+            self.do_goal()
+            self.dogoal = False
+
+        elif self.game.ball.in_air == 0 and self.is_at(self.game.ball) and not self.has_ball and (
+            not self.game.ball.is_bad or self.game.ball.lastowner.team != self.team):
+            last_owner = self.game.ball.owner
+            if not last_owner or random.randrange(3) == 1:
+                if last_owner:
+                    last_owner.has_ball = False
+                    last_owner.move_x = 0
+                    last_owner.move_y = 0
+                    last_owner.noattack = 5
+                self.game.ball.free = False
+        
+                if self.game.ball.is_bad:
+                    self.game.violation_count = 30
+
+                    self.game.ball.is_bad = False
+                    self.game.ball.owner = self
+                    self.game.ball.own = self.team
+                self.has_ball = True
+        
+                if self.conn is None:
+                    if self.position == 0:
+                        self.give_pass()
+                        self.noattack = 3
+                    else:
+                        (self.move_x, self.move_y) = Position.move(self, self.game.frames[self.team])
+        elif self.team == self.game.ball.own and not self.game.ball.free:
+            if self.conn is None:
+                if self is not self.game.ball.owner:
+                    if self.is_need_move():
+                        (self.move_x, self.move_y) = Position.move(self, Position(self.game.ball.x + self.game.ball.move_y,
+                                                                                  self.game.ball.y + self.game.ball.move_y))
+                    else:
+                        (self.move_x, self.move_y) = self.move_to_home()
+                else:
+                    self.check_violation()
+                    open_player, dist = self.find_open()
+                    if self.min_dist_to_enemy() < 50 and open_player and dist > 10:
+                        self.give_pass(open_player)
+                        self.noattack = 5
+                    else:
+                        (self.move_x, self.move_y) = Position.move(self, self.game.frames[self.team])
+                
+                        frame_pos = self.game.frames[self.team]
+                        frame_distance = Position.distance(self, frame_pos)
+                        finish_distance = Position.distance(self, Position(frame_pos.x, self.y))
+                        if frame_distance < 100 or finish_distance < 100 or Position.min_dist_to_enemy(self,
+                                                                                                       frame_pos) > 10:
+                            self.do_goal()
+                        elif frame_distance < 50 or finish_distance < 50:
+                            self.do_goal()
+        else:
+            if self.conn is None:
+                if (self.position == 0 and Position.distance(self, self.game.ball) < 100) or (
+                        self.position != 0 and self.is_need_move()):
+                    (self.move_x, self.move_y) = Position.move(self, Position(self.game.ball.x + self.game.ball.move_y,
+                                                                              self.game.ball.y + self.game.ball.move_y))
+                else:
+                    (self.move_x, self.move_y) = self.move_to_home()
+
+        self.x += self.move_x
+        self.y += self.move_y
+
+        if self.x - Player.size < 0:
+            self.x = Player.size
+        if self.y - Player.size < 0:
+            self.y = Player.size
+        if self.x + Player.size > self.game.field_width:
+            self.x = self.game.field_width - Player.size
+        if self.y + Player.size > self.game.field_height:
+            self.y = self.game.field_height - Player.size
+
+        if self.has_ball:
+            self.game.ball.x = self.x
+            self.game.ball.y = self.y
+     
+        print("Exiting " + self.name)
+
+
+class PlayerThread(threading.Thread):
+    def __init__(self, p):
+        threading.Thread.__init__(self)
+        self.p = p
