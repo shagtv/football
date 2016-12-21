@@ -173,14 +173,13 @@ class Player(object):
             if self.conn is None:
                 if self is not self.game.ball.owner:
                     if self.is_need_move():
-                        (self.move_x, self.move_y) = Position.move(self, Position(self.game.ball.x + self.game.ball.move_y,
-                                                                         self.game.ball.y + self.game.ball.move_y))
+                        (self.move_x, self.move_y) = Position.move(self, self.game.ball)
                     else:
                         (self.move_x, self.move_y) = self.move_to_home()
                 else:
                     self.check_violation()
                     open_player, dist = self.find_open()
-                    if self.min_dist_to_enemy() < 50 and open_player and dist > 10:
+                    if self.min_dist_to_enemy() < 50 and open_player and dist > 20:
                         self.give_pass(open_player)
                         self.noattack = 5
                     else:
@@ -188,18 +187,15 @@ class Player(object):
 
                         frame_pos = self.game.frames[self.team]
                         frame_distance = Position.distance(self, frame_pos)
-                        finish_distance = Position.distance(self, Position(frame_pos.x, self.y))
-                        if frame_distance < 100 or finish_distance < 100 or Position.min_dist_to_enemy(self,
-                                                                                                       frame_pos) > 10:
+                        if frame_distance < 100 or Position.min_dist_to_enemy(self, frame_pos) > 10:
                             self.do_goal()
-                        elif frame_distance < 50 or finish_distance < 50:
+                        elif frame_distance < 50:
                             self.do_goal()
         else:
             if self.conn is None:
-                if (self.position == 0 and Position.distance(self, self.game.ball) < 100) or (
-                        self.position != 0 and self.is_need_move()):
-                    (self.move_x, self.move_y) = Position.move(self, Position(self.game.ball.x + self.game.ball.move_y,
-                                                                     self.game.ball.y + self.game.ball.move_y))
+                if (self.position == 0 and Position.distance(self, self.game.ball) < 100) \
+                        or (self.position != 0 and self.is_need_move()):
+                    (self.move_x, self.move_y) = Position.move(self, self.game.ball)
                 else:
                     (self.move_x, self.move_y) = self.move_to_home()
 

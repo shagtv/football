@@ -34,6 +34,8 @@ class GameHandler(websocket.WebSocketHandler, web.RequestHandler):
             elif command == 'join': Commands.join(self, data['id'])
             elif command == 'leave': Commands.leave(self, data['id'])
             elif command == 'move': Commands.move(self, data)
+            elif command == 'pass': Commands.dopass(self, data['id'])
+            elif command == 'goal': Commands.dogoal(self, data['id'])
 
     @staticmethod
     def period_run():
