@@ -202,13 +202,13 @@ class Player(object):
         self.x += self.move_x
         self.y += self.move_y
 
-        if self.x - Player.size < 0:
+        if self.x < Player.size:
             self.x = Player.size
-        if self.y - Player.size < 0:
+        if self.y < Player.size:
             self.y = Player.size
-        if self.x + Player.size > self.game.field_width:
+        if self.x > self.game.field_width - Player.size:
             self.x = self.game.field_width - Player.size
-        if self.y + Player.size > self.game.field_height:
+        if self.y > self.game.field_height - Player.size:
             self.y = self.game.field_height - Player.size
 
         if self.has_ball:

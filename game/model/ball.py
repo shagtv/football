@@ -36,7 +36,6 @@ class Ball(object):
         if self.y + self.move_y < 0:
             self.move_x = 0
             self.move_y = 0
-            self.move_y = -self.move_y
             self.is_bad = True
         if self.x + self.move_x > game.field_width:
             if game.field_height / 2 - 22 <= self.y <= game.field_height / 2 + 22:
@@ -49,7 +48,6 @@ class Ball(object):
         if self.y + self.move_y > game.field_height:
             self.move_x = 0
             self.move_y = 0
-            self.move_y = -self.move_y
             self.is_bad = True
 
         if self.in_air > 0:
