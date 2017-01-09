@@ -256,13 +256,15 @@ $(function () {
 
         if (e.keyCode == 81) {
             ws.send(JSON.stringify({
-                'command': 'pass'
+                'command': 'pass',
+                'id': gameId
             }))
         }
 
         if (e.keyCode == 87) {
             ws.send(JSON.stringify({
-                'command': 'goal'
+                'command': 'goal',
+                'id': gameId
             }))
         }
 
@@ -274,7 +276,8 @@ $(function () {
             ws.send(JSON.stringify({
                 'command': 'move',
                 'moveX': moveX,
-                'moveY': moveY
+                'moveY': moveY,
+                'id': gameId
             }))
         }
     };
@@ -309,7 +312,8 @@ $(function () {
             ws.send(JSON.stringify({
                 'command': 'move',
                 'moveX': moveX,
-                'moveY': moveY
+                'moveY': moveY,
+                'id': gameId
             }))
         }
     };

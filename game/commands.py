@@ -55,6 +55,7 @@ class Commands(object):
                 for p in game.players:
                     if p.conn is None:
                         p.conn = self
+                        p.name = p.name + '*'
                         break
 
     @staticmethod
@@ -64,13 +65,33 @@ class Commands(object):
                 for p in game.players:
                     if self == p.conn:
                         p.conn = None
+                        p.name = p.name.replace('*', '')
                         break
 
     @staticmethod
-    def move(self, id):
+    def move(self, data):
+        for game in application.games:
+            if game.id == data['id']:
+                for p in game.players:
+                    if self == p.conn:
+                        p.move_x = data['moveX']
+                        p.move_y = data['moveY']
+                        break
+
+    @staticmethod
+    def dopass(self, id):
         for game in application.games:
             if game.id == id:
                 for p in game.players:
                     if self == p.conn:
-                        p.conn = None
+                        p.dopass = True
+                        break
+
+    @staticmethod
+    def dogoal(self, id):
+        for game in application.games:
+            if game.id == id:
+                for p in game.players:
+                    if self == p.conn:
+                        p.dogoal = True
                         break
