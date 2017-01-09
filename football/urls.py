@@ -17,12 +17,14 @@ import debug_toolbar
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.conf.urls.i18n import i18n_patterns
 
 from football import settings
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     url(r'^admin/', admin.site.urls),
     url(r'^__debug__/', include(debug_toolbar.urls)),
     url(r'^auth/', include("authsys.urls", namespace='authsys')),
     url(r'^', include("teams.urls", namespace='teams')),
-]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    url(r'^i18n/', include('django.conf.urls.i18n'), name="set_language"),
+) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

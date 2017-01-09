@@ -3,16 +3,16 @@
 {% block content %}
 
     <ul class="breadcrumb">
-        <li><a href="{% url "teams:list" %}">Home</a></li>
-        <li class="active">Teams</li>
+        <li><a href="{% url "teams:list" %}">{{ _("Home") }}</a></li>
+        <li class="active">{{ _("Teams") }}</li>
     </ul>
 
     <div class="col-sm-6 col-sm-offset-3">
-        <h1>My teams</h1>
+        <h1>{{ _("My teams") }}</h1>
 
         <form action="" method="get" role="search">
              <div class="input-group">
-            <input type="search" class="form-control" name="q" placeholder="Search teams" value="{{ request.GET.q }}">
+            <input type="search" class="form-control" name="q" placeholder="{{ _("Search teams") }}" value="{{ request.GET.q }}">
              <div class="input-group-btn">
                 <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
              </div>
@@ -38,15 +38,15 @@
         <div class="pagination">
                 <span class="step-links">
                     {% if object_list.has_previous %}
-                        <a href="?page={{ object_list.previous_page_number }}&q={{ request.GET.q }}">previous</a>
+                        <a href="?page={{ object_list.previous_page_number }}&q={{ request.GET.q }}">{{ _("previous") }}</a>
                     {% endif %}
 
                     <span class="current">
-                        Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+                        {{ _("Page") }} {{ object_list.number }} {{ _("of") }} {{ object_list.paginator.num_pages }}.
                     </span>
 
                     {% if object_list.has_next %}
-                        <a href="?page={{ object_list.next_page_number }}&q={{ request.GET.q }}">next</a>
+                        <a href="?page={{ object_list.next_page_number }}&q={{ request.GET.q }}">{{ _("next") }}</a>
                     {% endif %}
                 </span>
         </div>

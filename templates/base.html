@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load i18n %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,6 +15,8 @@
     <link rel="stylesheet" href="{% static "css/base.css" %}">
 </head>
 <body>
+    {% include 'langform.html' %}
+
     <div class="container">
         <div class="header clearfix">
         <nav>

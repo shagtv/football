@@ -4,8 +4,8 @@
 
 {% block content %}
     <ul class="breadcrumb">
-        <li><a href="{% url "teams:list" %}">Home</a></li>
-        <li><a href="{% url "teams:list" %}">Teams</a></li>
+        <li><a href="{% url "teams:list" %}">{{ _("Home") }}</a></li>
+        <li><a href="{% url "teams:list" %}">{{ _("Teams") }}</a></li>
         <li class="active">{{ instance.name }}</li>
     </ul>
 
@@ -23,11 +23,11 @@
             <small>{{ instance.created }}</small>
         </h1>
         {% if instance.user.get_full_name %}
-            <p>Author: {{ instance.user.get_full_name }}</p>
+            <p>{{ _("Author") }}: {{ instance.user.get_full_name }}</p>
         {% endif %}
         <p>
-            <a href="{% url "teams:update" id=instance.id %}" class="btn btn-primary" role="button">Edit</a>
-            <a href="{% url "teams:delete" id=instance.id %}" class="btn btn-danger" role="button">Delete</a>
+            <a href="{% url "teams:update" id=instance.id %}" class="btn btn-primary" role="button">{{ _("Edit") }}</a>
+            <a href="{% url "teams:delete" id=instance.id %}" class="btn btn-danger" role="button">{{ _("Delete") }}</a>
         </p>
     </div>
 {% endblock %}
