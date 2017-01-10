@@ -22,10 +22,10 @@
         <nav>
           <ul class="nav nav-pills pull-right">
               {% if user.is_authenticated %}
-                <li role="presentation"><a href="/auth/logout">{{ _('Logout') }} ({{ user.get_username }})</a></li>
+                <li role="presentation"><a href="{% url 'authsys:logout' %}">{{ _('Logout') }} ({{ user.get_username }})</a></li>
             {% else %}
-                <li role="presentation"><a href="/auth/login">{{ _('Sign in') }}</a></li>
-                <li role="presentation"><a href="/auth/register">{{ _('Register') }}</a></li>
+                <li role="presentation"><a href="{% url 'authsys:login' %}">{{ _('Sign in') }}</a></li>
+                <li role="presentation"><a href="{% url 'authsys:register' %}">{{ _('Register') }}</a></li>
             {% endif %}
           </ul>
         </nav>
