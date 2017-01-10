@@ -4,8 +4,8 @@
 
 {% block content %}
     <ul class="breadcrumb">
-        <li><a href="{% url "teams:list" %}">Home</a></li>
-        <li><a href="{% url "teams:list" %}">Teams</a></li>
+        <li><a href="{% url "teams:list" %}">{{ _("Home") }}</a></li>
+        <li><a href="{% url "teams:list" %}">{{ _("Teams") }}</a></li>
         <li class="active">{{ instance.name }}</li>
     </ul>
 

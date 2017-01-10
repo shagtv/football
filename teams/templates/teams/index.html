@@ -19,6 +19,10 @@
              </div>
         </form>
 
+         <p>
+            <a href="{% url "teams:create" %}" class="btn btn-primary" role="button">{{ _("Create") }}</a>
+        </p>
+
         {% for object in object_list %}
             <div class="row">
                 <div class="col-sm-12">

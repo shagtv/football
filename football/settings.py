@@ -25,7 +25,7 @@ SECRET_KEY = '+-67-vh_+h4^o0ztlz_=(i^7dh3%5(5gl$#!82o(k^f0c19*js'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 # Application definition
 
@@ -127,7 +127,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 if DEBUG:
-    INTERNAL_IPS = ('*',)
+    INTERNAL_IPS = ('127.0.0.1',)
     MIDDLEWARE += (
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     )

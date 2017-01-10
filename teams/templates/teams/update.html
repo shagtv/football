@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ instance.name }} | {{ block.super }}{% endblock %}
+
+{% block content %}
+    <ul class="breadcrumb">
+        <li><a href="{% url "teams:list" %}">{{ _("Home") }}</a></li>
+        <li><a href="{% url "teams:list" %}">{{ _("Teams") }}</a></li>
+        <li class="active">{{ instance.name }}</li>
+    </ul>
+
+    <div class="col-sm-6 col-sm-offset-3">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_table }}
+            <input type="submit" value="{{ _('Save') }}" />
+        </form>
+    </div>
+{% endblock %}

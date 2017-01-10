@@ -19,9 +19,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf.urls.i18n import i18n_patterns
 
+from teams import views
 from football import settings
 
 urlpatterns = i18n_patterns(
+    url(r'^$', views.index, name='home'),
     url(r'^admin/', admin.site.urls),
     url(r'^__debug__/', include(debug_toolbar.urls)),
     url(r'^auth/', include("authsys.urls", namespace='authsys')),

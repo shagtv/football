@@ -15,25 +15,34 @@
     <link rel="stylesheet" href="{% static "css/base.css" %}">
 </head>
 <body>
-    {% include 'langform.html' %}
-
-    <div class="container">
-        <div class="header clearfix">
+<div class="container">
+    <div class="header clearfix">
         <nav>
-          <ul class="nav nav-pills pull-right">
-              {% if user.is_authenticated %}
-                <li role="presentation"><a href="{% url 'authsys:logout' %}">{{ _('Logout') }} ({{ user.get_username }})</a></li>
-            {% else %}
-                <li role="presentation"><a href="{% url 'authsys:login' %}">{{ _('Sign in') }}</a></li>
-                <li role="presentation"><a href="{% url 'authsys:register' %}">{{ _('Register') }}</a></li>
-            {% endif %}
-          </ul>
+            <ul class="nav nav-pills pull-right">
+                {% if user.is_authenticated %}
+                    <li role="presentation"><a href="{% url 'authsys:logout' %}">{{ _('Logout') }}
+                        ({{ user.get_username }})</a></li>
+                {% else %}
+                    <li role="presentation"><a href="{% url 'authsys:login' %}">{{ _('Sign in') }}</a></li>
+                    <li role="presentation"><a href="{% url 'authsys:register' %}">{{ _('Register') }}</a></li>
+                {% endif %}
+            </ul>
         </nav>
         <h3 class="text-muted">{{ _('Football manager') }}</h3>
-      </div>
-        {% block content %}{% endblock %}
     </div>
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</div>
+<br>
+<hr>
+{% include 'langform.html' %}
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -9,14 +9,6 @@
         <li class="active">{{ instance.name }}</li>
     </ul>
 
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
     <div class="col-sm-6 col-sm-offset-3">
         <h1>
             {{ instance.name }}
@@ -25,9 +17,12 @@
         {% if instance.user.get_full_name %}
             <p>{{ _("Author") }}: {{ instance.user.get_full_name }}</p>
         {% endif %}
+
+        {% if request.user == instance.user %}
         <p>
             <a href="{% url "teams:update" id=instance.id %}" class="btn btn-primary" role="button">{{ _("Edit") }}</a>
             <a href="{% url "teams:delete" id=instance.id %}" class="btn btn-danger" role="button">{{ _("Delete") }}</a>
         </p>
+        {% endif %}
     </div>
 {% endblock %}
