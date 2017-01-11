@@ -8,10 +8,12 @@ from django.urls import reverse
 from django.utils import timezone
 from numpy.distutils.fcompiler import none
 
+from django.views.decorators.cache import cache_page
+
 from teams.forms import TeamForm
 from teams.models import Team
 
-
+@cache_page(60)
 def index(request):
     queryset = Team.objects.all()
 
@@ -37,7 +39,7 @@ def index(request):
 
     return render(request, "teams/index.html", context)
 
-
+@cache_page(60)
 def detail(request, name=None):
     instance = get_object_or_404(Team, name=name)
 
