@@ -70,6 +70,8 @@ TEMPLATES = [
     },
 ]
 
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStorage'
+
 WSGI_APPLICATION = 'football.wsgi.application'
 
 
