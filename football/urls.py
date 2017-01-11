@@ -29,4 +29,4 @@ urlpatterns = i18n_patterns(
     url(r'^auth/', include("authsys.urls", namespace='authsys')),
     url(r'^', include("teams.urls", namespace='teams')),
     url(r'^i18n/', include('django.conf.urls.i18n'), name="set_language"),
-) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+)# + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
