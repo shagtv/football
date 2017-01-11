@@ -96,6 +96,7 @@ DATABASES = {
         'PASSWORD': 'sh@ggy0706',
         'HOST': 'localhost',
         'PORT': '',
+        'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
     }
     #'default': {
     #        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
