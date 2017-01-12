@@ -24,7 +24,7 @@ SECRET_KEY = '+-67-vh_+h4^o0ztlz_=(i^7dh3%5(5gl$#!82o(k^f0c19*js'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', '37.139.31.159']
+ALLOWED_HOSTS = ['127.0.0.1', '37.139.31.159', 'shagtv.net', 'www.shagtv.net']
 
 # Application definition
 
