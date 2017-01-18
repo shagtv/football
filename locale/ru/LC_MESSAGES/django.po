@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-10 00:52+0300\n"
+"POT-Creation-Date: 2017-01-18 22:38+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,20 @@ msgstr ""
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
 
+#: authsys/templates/authsys/login.html:7
+#: authsys/templates/authsys/register.html:7
+#: teams/templates/teams/create.html:7 teams/templates/teams/detail.html:7
+#: teams/templates/teams/index.html:6 teams/templates/teams/update.html:7
+msgid "Home"
+msgstr "Главная"
+
+#: authsys/templates/authsys/login.html:8
+#: authsys/templates/authsys/register.html:8 teams/models.py:27
+#: teams/templates/teams/create.html:8 teams/templates/teams/detail.html:8
+#: teams/templates/teams/index.html:7 teams/templates/teams/update.html:8
+msgid "Teams"
+msgstr "Команды"
+
 #: authsys/templates/authsys/login.html:22
 #: authsys/templates/authsys/login.html:24
 msgid "Username"
@@ -30,31 +44,31 @@ msgstr "Логин"
 msgid "Password"
 msgstr "Пароль"
 
-#: authsys/templates/authsys/login.html:35 templates/base.html:25
+#: authsys/templates/authsys/login.html:35 templates/base.html:26
 msgid "Sign in"
 msgstr "Войти"
 
-#: authsys/templates/authsys/register.html:26 templates/base.html:26
+#: authsys/templates/authsys/register.html:26 templates/base.html:27
 msgid "Register"
 msgstr "Регистрация"
 
-#: teams/templates/teams/detail.html:7 teams/templates/teams/index.html:6
-msgid "Home"
-msgstr "Главная"
+#: teams/models.py:26
+msgid "Team"
+msgstr "Команда"
 
-#: teams/templates/teams/detail.html:8 teams/templates/teams/index.html:7
-msgid "Teams"
-msgstr "Команды"
+#: teams/templates/teams/create.html:16 teams/templates/teams/update.html:16
+msgid "Save"
+msgstr "Сохранить"
 
-#: teams/templates/teams/detail.html:26
+#: teams/templates/teams/detail.html:18
 msgid "Author"
 msgstr "Автор"
 
-#: teams/templates/teams/detail.html:29
+#: teams/templates/teams/detail.html:23
 msgid "Edit"
 msgstr "Изменить"
 
-#: teams/templates/teams/detail.html:30
+#: teams/templates/teams/detail.html:24
 msgid "Delete"
 msgstr "Удалить"
 
@@ -66,19 +80,23 @@ msgstr "Мои команды"
 msgid "Search teams"
 msgstr "Поиск команд"
 
-#: teams/templates/teams/index.html:41
+#: teams/templates/teams/index.html:23
+msgid "Create"
+msgstr "Создать"
+
+#: teams/templates/teams/index.html:45
 msgid "previous"
 msgstr "пред."
 
-#: teams/templates/teams/index.html:45
+#: teams/templates/teams/index.html:49
 msgid "Page"
 msgstr "Страница"
 
-#: teams/templates/teams/index.html:45
+#: teams/templates/teams/index.html:49
 msgid "of"
 msgstr "из"
 
-#: teams/templates/teams/index.html:49
+#: teams/templates/teams/index.html:53
 msgid "next"
 msgstr "след."
 
@@ -86,6 +104,6 @@ msgstr "след."
 msgid "Logout"
 msgstr "Выйти"
 
-#: templates/base.html:30
+#: templates/base.html:31
 msgid "Football manager"
 msgstr "Футбольный менеджер"
