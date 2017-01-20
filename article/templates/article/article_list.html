@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ _('Last articles') }}{% endblock %}
+
+{% block content %}
+    <ul class="breadcrumb">
+        <li class="active">{{ _('Last articles') }}</li>
+    </ul>
+
+    <div class="col-sm-6 col-sm-offset-3">
+        <h1>
+            {{ _('Last articles') }}
+        </h1>
+
+        <p>
+            <a href="{% url "article:article-create" %}" class="btn btn-primary" role="button">{{ _("Create") }}</a>
+        </p>
+
+        {%  for article in object_list %}
+            <h3><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h3>
+            <p>
+                {{ article.text }}
+            </p>
+            <hr>
+            {{ _('Published by') }} {{ article.user.username }} {{ _('at') }} {{ article.updated }}
+        {% empty %}
+            {{ _('No articles yet.') }}
+        {% endfor %}
+
+        {% if is_paginated %}
+            <div class="pagination">
+                <span class="page-links">
+                    {% if page_obj.has_previous %}
+                        <a href="/article?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+                    <span class="page-current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+                    {% if page_obj.has_next %}
+                        <a href="/article?page={{ page_obj.next_page_number }}">next</a>
+                    {% endif %}
+                </span>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

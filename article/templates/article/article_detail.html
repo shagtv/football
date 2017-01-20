@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+    <ul class="breadcrumb">
+        <li><a href="{% url "article:article-list" %}">{{ _("Last articles") }}</a></li>
+        <li class="active">{{ object.title }}</li>
+    </ul>
+
+    <div class="col-sm-6 col-sm-offset-3">
+        <h1>
+            {{ object.title }}
+        </h1>
+
+        <p>
+            {{ object.text }}
+        </p>
+        <hr>
+        {{ _('Published by') }} {{ object.user.username }} {{ _('at') }} {{ object.updated }}
+
+        {% if request.user == object.user %}
+            <p>
+                <a href="{% url "article:article-update" pk=object.pk %}" class="btn btn-primary" role="button">{{ _("Edit") }}</a>
+                <a href="{% url "article:article-delete" pk=object.pk %}" class="btn btn-danger" role="button">{{ _("Delete") }}</a>
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{ _('Delete') }} {{ article.title }}?</h1>
+
+    <ul class="breadcrumb">
+        <li><a href="{% url "article:article-list" %}">{{ _("Last articles") }}</a></li>
+        <li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></li>
+        <li class="active">{{ _('Delete') }}</li>
+    </ul>
+
+    <form method='POST'>
+        {% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="{{ _('Delete') }}">
+        <a href="{{ article.get_absolute_url }}">{{ _('Cancel') }}</a>
+    </form>
+{% endblock %}
