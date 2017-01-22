@@ -1,3 +1,5 @@
+# coding: utf-8
+
 """
 Django settings for football project.
 
@@ -158,8 +160,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LANGUAGES = [
-    ('ru', 'Русский'),
-    ('en', 'English'),
+    ('ru', u'Русский'),
+    ('en', u'English'),
 ]
 
 if DEBUG:
