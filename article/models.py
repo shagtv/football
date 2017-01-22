@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from tagging.registry import register
+
 
 class Category(models.Model):
     title = models.CharField(max_length=255)
@@ -58,5 +58,3 @@ class Article(models.Model):
         ordering = ["-created"]
         verbose_name = _('Article')
         verbose_name_plural = _('Articles')
-
-register(Article)
