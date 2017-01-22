@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy
+from django.utils.translation import get_language
 from django.views.generic import CreateView, UpdateView, DetailView, ListView, DeleteView
 from .models import Article
 
@@ -7,6 +8,9 @@ class ArticleListView(ListView):
     model = Article
     paginate_by = 3
 
+    def get_queryset(self):
+        return super(ArticleListView, self).get_queryset().filter(language=get_language())
+
 
 class ArticleDetailView(DetailView):
     model = Article
@@ -14,7 +18,7 @@ class ArticleDetailView(DetailView):
 
 class ArticleCreateView(CreateView):
     model = Article
-    fields = '__all__'
+    fields = ('title', 'text', 'category', 'tag')
 
 
 class ArticleUpdateView(UpdateView):

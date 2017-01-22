@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '+-67-vh_+h4^o0ztlz_=(i^7dh3%5(5gl$#!82o(k^f0c19*js'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('debug', False)
 
 ALLOWED_HOSTS = ['127.0.0.1', '37.139.31.159', 'shagtv.net', 'www.shagtv.net']
 
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tagging',
     'teams',
     'authsys',
     'article',
@@ -60,7 +61,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates'), 'templates'],
-        #'APP_DIRS': True,
+        # 'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -82,15 +83,10 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStora
 
 WSGI_APPLICATION = 'football.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 DATABASES = {
-    #'default': {
-    #    'ENGINE': 'django.db.backends.sqlite3',
-    #    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    #}
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'football',
@@ -100,15 +96,15 @@ DATABASES = {
         'PORT': '',
         'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
     }
-    #'default': {
-    #        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+    # 'default': {
+    #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
     #        'NAME': 'football',                      # Or path to database file if using sqlite3.
     #        # The following settings are not used with sqlite3:
     #        'USER': 'root',
     #        'PASSWORD': 'sh@ggy0706',
-    #        'HOST': 'localhost',                      # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
-    #        'PORT': '',                      # Set to empty string for default.
-    #}
+    #        'HOST': 'localhost',
+    #        'PORT': '',# Set to empty string for default.
+    # }
 }
 
 
@@ -137,11 +133,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'ru-ru'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'Europe/Moscow'
 
@@ -162,6 +157,11 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+LANGUAGES = [
+    ('ru', 'Русский'),
+    ('en', 'English'),
+]
 
 if DEBUG:
     INTERNAL_IPS = ('127.0.0.1', '37.139.31.159', '185.6.245.134')
@@ -190,4 +190,11 @@ if DEBUG:
 
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
+    }
+
+    DATABASES = {
+        'default': {
+           'ENGINE': 'django.db.backends.sqlite3',
+           'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }

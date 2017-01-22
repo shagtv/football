@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Canvas tutorial</title>
+    <style type="text/css">
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<canvas id="pitch" width="800" height="518"></canvas>
+<span id="debug"></span>
+<script>
+    (function () {
+        var canvas = document.getElementById('pitch');
+        var ctx = canvas.getContext('2d');
+
+        var pitch = {
+            draw: function () {
+
+                // Outer lines
+                ctx.beginPath();
+                ctx.rect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#060";
+                ctx.fill();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = "#FFF";
+                ctx.stroke();
+                ctx.closePath();
+
+                ctx.fillStyle = "#FFF";
+
+                // Mid line
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, 0);
+                ctx.lineTo(canvas.width / 2, canvas.height);
+                ctx.stroke();
+                ctx.closePath();
+
+                //Mid circle
+                ctx.beginPath()
+                ctx.arc(canvas.width / 2, canvas.height / 2, 73, 0, 2 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+                //Mid point
+                ctx.beginPath()
+                ctx.arc(canvas.width / 2, canvas.height / 2, 2, 0, 2 * Math.PI, false);
+                ctx.fill();
+                ctx.closePath();
+
+                //Home penalty box
+                ctx.beginPath();
+                ctx.rect(0, (canvas.height - 322) / 2, 132, 322);
+                ctx.stroke();
+                ctx.closePath();
+                //Home goal box
+                ctx.beginPath();
+                ctx.rect(0, (canvas.height - 146) / 2, 44, 146);
+                ctx.stroke();
+                ctx.closePath();
+                //Home goal
+                ctx.beginPath();
+                ctx.moveTo(1, (canvas.height / 2) - 22);
+                ctx.lineTo(1, (canvas.height / 2) + 22);
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.closePath();
+                ctx.lineWidth = 1;
+
+                //Home penalty point
+                ctx.beginPath()
+                ctx.arc(88, canvas.height / 2, 1, 0, 2 * Math.PI, true);
+                ctx.fill();
+                ctx.closePath();
+                //Home half circle
+                ctx.beginPath()
+                ctx.arc(88, canvas.height / 2, 73, 0.29 * Math.PI, 1.71 * Math.PI, true);
+                ctx.stroke();
+                ctx.closePath();
+
+                //Away penalty box
+                ctx.beginPath();
+                ctx.rect(canvas.width - 132, (canvas.height - 322) / 2, 132, 322);
+                ctx.stroke();
+                ctx.closePath();
+                //Away goal box
+                ctx.beginPath();
+                ctx.rect(canvas.width - 44, (canvas.height - 146) / 2, 44, 146);
+                ctx.stroke();
+                ctx.closePath();
+                //Away goal
+                ctx.beginPath();
+                ctx.moveTo(canvas.width - 1, (canvas.height / 2) - 22);
+                ctx.lineTo(canvas.width - 1, (canvas.height / 2) + 22);
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.closePath();
+                ctx.lineWidth = 1;
+                //Away penalty point
+                ctx.beginPath()
+                ctx.arc(canvas.width - 88, canvas.height / 2, 1, 0, 2 * Math.PI, true);
+                ctx.fill();
+                ctx.closePath();
+                //Away half circle
+                ctx.beginPath()
+                ctx.arc(canvas.width - 88, canvas.height / 2, 73, 0.71 * Math.PI, 1.29 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+
+                //Home L corner
+                ctx.beginPath()
+                ctx.arc(0, 0, 8, 0, 0.5 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+                //Home R corner
+                ctx.beginPath()
+                ctx.arc(0, canvas.height, 8, 0, 2 * Math.PI, true);
+                ctx.stroke();
+                ctx.closePath();
+                //Away R corner
+                ctx.beginPath()
+                ctx.arc(canvas.width, 0, 8, 0.5 * Math.PI, 1 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+                //Away L corner
+                ctx.beginPath()
+                ctx.arc(canvas.width, canvas.height, 8, 1 * Math.PI, 1.5 * Math.PI, false);
+                ctx.stroke();
+                ctx.closePath();
+            }
+        };
+
+        var ball = {
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height,
+            draw: function () {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, 2 * Math.PI, false);
+                ctx.fillStyle = "#FF0";
+                ctx.fill();
+                ctx.strokeStyle = "#000";
+                ctx.stroke();
+                ctx.closePath();
+            }
+        };
+
+        var Player = function (x, y, speed, team) {
+            this.x = x;
+            this.y = y;
+            this.speed = speed || 2;
+            this.team = team || "home";
+        };
+
+        Player.prototype.isAt = function (point) {
+            return Math.abs(this.x - point.x) < 1 ? (Math.abs(this.y - point.y) < 1 ? true : false) : false;
+        };
+
+        Player.prototype.move = function (point) {
+            if (!this.isAt(point)) {
+
+                var h = Math.sqrt(Math.pow(Math.abs(this.x - point.x), 2) + Math.pow(Math.abs(this.y - point.y), 2));
+                var v = Math.acos((Math.abs(this.x - point.x) / h));
+                var x = this.speed * Math.cos(v);
+                var y = this.speed * Math.sin(v);
+
+                if (point.x >= this.x && point.y >= this.y) {
+                    this.x += x;
+                    this.y += y;
+                } else if (point.x >= this.x && point.y < this.y) {
+                    this.x += x;
+                    this.y -= y;
+                } else if (point.x < this.x && point.y >= this.y) {
+                    this.x -= x;
+                    this.y += y;
+                } else if (point.x < this.x && point.y < this.y) {
+                    this.x -= x;
+                    this.y -= y;
+                }
+                this.draw();
+            }
+        };
+
+        Player.prototype.draw = function () {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, 3, 0, 2 * Math.PI, false);
+            ctx.fillStyle = ((this.team === "home") ? "#00F" : "#F00");
+            ctx.fill();
+            ctx.strokeStyle = "#000";
+            ctx.stroke();
+            ctx.closePath();
+        };
+
+        var players = [];
+
+        for (var i = 0; i < 10; i++) {
+            players[i] = new Player(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*5+1);
+        }
+
+        for (i = 10; i < 20; i++) {
+            players[i] = new Player(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*5+1, "guest");
+        }
+
+        //ball.draw();
+        //player.draw();
+        var coordinates = [
+            {x: 200, y: 259},
+            {x: 230, y: 229},
+            {x: 290, y: 289},
+            {x: 550, y: 289},
+            {x: 400, y: 320},
+            {x: 200, y: 259}
+        ];
+
+        var game = {
+            timer: {},
+            step: function () {
+                pitch.draw();
+
+                for (i = 0; i < 20; i++) {
+                    players[i].move({x: ball.x, y: ball.y});
+                }
+                ball.draw();
+            },
+            start: function () {
+                pitch.draw();
+                this.timer = window.setInterval(this.step, 30);
+            }
+        };
+        game.start();
+    })();
+
+</script>
+</body>
+</html>

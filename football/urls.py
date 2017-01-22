@@ -15,19 +15,19 @@ Including another URLconf
 """
 import debug_toolbar
 from django.conf.urls import url, include
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf.urls.i18n import i18n_patterns
 
 from teams import views
-from football import settings
 
 urlpatterns = i18n_patterns(
     url(r'^$', views.index, name='home'),
-    url(r'^admin/', admin.site.urls),
-    url(r'^__debug__/', include(debug_toolbar.urls)),
     url(r'^auth/', include("authsys.urls", namespace='authsys')),
     url(r'^article/', include("article.urls", namespace='article')),
     url(r'^', include("teams.urls", namespace='teams')),
     url(r'^i18n/', include('django.conf.urls.i18n'), name="set_language"),
-)# + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+) + [
+    url(r'^admin/', admin.site.urls),
+    url(r'^__debug__/', include(debug_toolbar.urls)),
+]
+# + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,12 +1,14 @@
 # coding: utf-8
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
-
+from tagging.registry import register
 
 class Category(models.Model):
     title = models.CharField(max_length=255)
+    language = models.CharField(max_length=5, choices=settings.LANGUAGES, default='ru')
 
     def __str__(self):
         return self.title
@@ -18,6 +20,7 @@ class Category(models.Model):
 
 class Tag(models.Model):
     title = models.CharField(max_length=255)
+    language = models.CharField(max_length=5, choices=settings.LANGUAGES, default='ru')
 
     def __str__(self):
         return self.title
@@ -27,9 +30,10 @@ class Tag(models.Model):
         verbose_name_plural = _('Tags')
 
 
-class ArticleManaget(models.Manager):
+class ArticleManager(models.Manager):
     def get_queryset(self):
-        return super(ArticleManaget, self).get_queryset().select_related('user')
+        return super(ArticleManager, self).get_queryset().select_related('user')
+        # qs = qs.filter(language=get_language())
 
 
 class Article(models.Model):
@@ -40,16 +44,19 @@ class Article(models.Model):
     tag = models.ManyToManyField(Tag, blank=True)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     created = models.DateTimeField(auto_now=False, auto_now_add=True)
-    objects = ArticleManaget()
+    language = models.CharField(max_length=5, choices=settings.LANGUAGES, default='ru')
+
+    objects = ArticleManager()
 
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
-        print(self.id)
         return reverse('article:article-detail', kwargs={'pk': self.pk})
 
     class Meta:
         ordering = ["-created"]
         verbose_name = _('Article')
         verbose_name_plural = _('Articles')
+
+register(Article)
